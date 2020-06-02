@@ -166,7 +166,7 @@ public:
    */
   CHAI_HOST void registerTouch(ExecutionSpace space);
 
-  CHAI_HOST void move(ExecutionSpace space=NONE) const;
+  CHAI_HOST void move(ExecutionSpace space=NONE);
 
   CHAI_HOST_DEVICE ManagedArray<T> slice(size_t begin, size_t elems=(size_t)-1) const;
 
@@ -403,26 +403,26 @@ protected:
   /*!
    * Currently active data pointer.
    */
-  mutable T* m_active_pointer = nullptr;
-  mutable T* m_active_base_pointer = nullptr;
+  T* m_active_pointer = nullptr;
+  T* m_active_base_pointer = nullptr;
 
   /*!
    * Pointer to ArrayManager instance.
    */
-  mutable ArrayManager* m_resource_manager = nullptr;
+  ArrayManager* m_resource_manager = nullptr;
 
   /*!
    * Number of elements in the ManagedArray.
    */
-  mutable size_t m_elems = 0;
-  mutable size_t m_offset = 0;
+  size_t m_elems = 0;
+  size_t m_offset = 0;
 
   /*!
    * Pointer to PointerRecord data.
    */
-  mutable PointerRecord* m_pointer_record = nullptr;
+  PointerRecord* m_pointer_record = nullptr;
 
-  mutable bool m_is_slice = false;
+  bool m_is_slice = false;
 };
 
 /*!

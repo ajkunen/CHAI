@@ -387,7 +387,7 @@ CHAI_HOST_DEVICE void ManagedArray<T>::decr(size_t i) const {
 template <typename T>
 CHAI_INLINE
 CHAI_HOST
-void ManagedArray<T>::move(ExecutionSpace space) const
+void ManagedArray<T>::move(ExecutionSpace space)
 {
   if (m_pointer_record != &ArrayManager::s_null_record) {
      ExecutionSpace prev_space = m_pointer_record->m_last_space;
@@ -433,13 +433,17 @@ template<typename T>
 CHAI_INLINE
 CHAI_HOST_DEVICE ManagedArray<T>::operator T*() const {
 #if !defined(__CUDA_ARCH__) && !defined(__HIP_DEVICE_COMPILE__)
+	T* retval = nullptr;
   if (m_active_pointer) {
      if (m_pointer_record == nullptr || m_pointer_record == &ArrayManager::s_null_record) {
         CHAI_LOG(Warning, "nullptr pointer_record associated with non-nullptr active_pointer")
      }
      ExecutionSpace prev_space = m_resource_manager->getExecutionSpace();
      m_resource_manager->setExecutionSpace(CPU);
-     move(CPU);
+
+		 // Copy, triggering move on a non-const object
+		 ManagedArray<T> c(*this);		 
+		 retval = c.m_active_pointer;
 
      // always touch regarless of constness of type (don't trust the application not to const-cast)
      m_resource_manager->registerTouch(m_pointer_record);
@@ -452,7 +456,7 @@ CHAI_HOST_DEVICE ManagedArray<T>::operator T*() const {
      return nullptr;
   }
 
-  return m_active_pointer;
+  return retval;
 #else
   return m_active_pointer;
 #endif
